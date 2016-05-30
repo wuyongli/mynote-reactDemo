@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>MyNote by React</title>
+    <script src="http://static.runoob.com/assets/react/react-0.14.7/build/react.min.js"></script>
+    <script src="http://static.runoob.com/assets/react/react-0.14.7/build/react-dom.min.js"></script>
+    <script src="http://static.runoob.com/assets/react/browser.min.js"></script>
+  </head>
+  <body> 
+    <div id="mydemo"></div>
+    <script type="text/babel">
+    //初始数据
+    var _data=[
+        {noteTitle:'111',noteText:'aaa'},
+        {noteTitle:'222',noteText:'bbb'},
+    ];
+    var _MyNote;
+   var MyNote=React.createClass({
+       
+        //初始状态
+        getInitialState: function () {
+             _MyNote=this;
+            return {
+                data:_data,
+                noteTitle:'',
+                noteText:''
+            }
+        },
+        updateNote:function(title,text,flag){
+            _data.push({noteTitle:title,noteText:text,delFlag:flag});
+            this.setState({data:_data});
+        },
+        deleteNote:function(title){
+            var notes=[];
+            this.state.data.map(function(note){
+                if(note.noteTitle!==title){
+                    notes.push(note);
+                }
+            });
+            this.setState({data:notes});
+        },
+        render:function(){
+            return (
+                <div>
+                    <NoteInput updateNote={this.updateNote}/>
+                    <NoteList  notes={this.state.data}/>
+                </div>
+            )
+        }
+   });
+
+   var NoteInput=React.createClass({
+        getInitialState:function(){
+            return {
+                noteTitle:'',
+                noteText:''
+            }
+        },
+        updateNoteHander:function(){
+            this.props.updateNote(this.state.noteTitle,this.state.noteText);
+        },
+        updateNotetitle:function(event){
+            this.setState({noteTitle: event.target.value});
+        },
+        updateNotetext:function(event){
+            this.setState({noteText:event.target.value});
+        },
+        render:function(){
+            return (
+                <div>
+                    <input type="text" onChange={this.updateNotetitle}/><br/>
+                    <textarea name="" id="" cols="30" rows="10" onChange={this.updateNotetext}></textarea>
+                    <button onClick={this.updateNoteHander}>保存</button>
+                </div>
+            )
+        }
+   });
+
+   var NoteList=React.createClass({
+        render:function(){
+            var notes=[];
+            this.props.notes.map(function(noteItem){
+                notes.push(
+                    <NoteItem note={noteItem}/>
+                   
+                );
+            });
+            return (
+                <div>{notes}</div>
+            )
+        }
+   });
+
+   var NoteItem=React.createClass({
+    //直接调用组件MyNote的方法
+        delNoteItem:function(){
+            _MyNote.deleteNote(this.props.note.noteTitle);
+        },
+        render:function(){
+            return(
+                <h3>标题：{this.props.note.noteTitle}内容：{this.props.note.noteText}<button onClick={this.delNoteItem}>删除</button></h3>
+            )      
+        }
+   });
+
+    React.render(<MyNote/>, document.getElementById('mydemo'));
+    </script>
+    
+  </body>
+</html>
